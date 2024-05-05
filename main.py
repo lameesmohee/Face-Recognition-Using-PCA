@@ -47,6 +47,7 @@ class MainWindow(QTabWidget):
 
     def display_image(self, graph_name, image_data):
         if isinstance(image_data, np.ndarray):
+            image_data = cv2.cvtColor(image_data, cv2.COLOR_BGR2RGB)
             image_data = np.rot90(image_data, -1)
             graph_name.clear()
             view_box = graph_name.addViewBox()
