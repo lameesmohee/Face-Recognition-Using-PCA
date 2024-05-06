@@ -5,7 +5,7 @@ import pyqtgraph as pg
 import cv2
 import numpy as np
 from FaceDetection import FaceDetector
-
+from RocCurve import ROCPlotter
 
 
 class MainWindow(QTabWidget):
@@ -17,8 +17,8 @@ class MainWindow(QTabWidget):
         self.applyFaceDetection = FaceDetector(self)
         self.face_recognition_BrowseBtn.clicked.connect(self.face_recognition_browse_image)
         self.face_detection_browseBtn.clicked.connect(self.face_detection_browse_image)
-
-        
+        #rana updates
+        self.rocPlotter = ROCPlotter(self)  # Instantiate ROCPlotter
 
 
     def face_recognition_browse_image(self):
@@ -30,7 +30,7 @@ class MainWindow(QTabWidget):
             self.selected_image_path = file_name
             image_data = cv2.imread(file_name)
             self.display_image(self.graphicsLayout_BeforeFaceRecognition, image_data)
-            
+           
 
     def face_detection_browse_image(self):
         options = QFileDialog.Options()
@@ -43,6 +43,9 @@ class MainWindow(QTabWidget):
             self.display_image(self.graphicsLayout_BeforeFaceDetection, image_data)
             self.applyFaceDetection.detectFaces()
 
+            #rana updates
+            actual_labels, predicted_labels = self.applyFaceDetection.detectFaces()
+            self.rocPlotter.plot_ROC(actual_labels, predicted_labels)
 
 
     def display_image(self, graph_name, image_data):

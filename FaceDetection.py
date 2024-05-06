@@ -22,8 +22,8 @@ class FaceDetector:
             cv2.rectangle(imageBGR , (x, y), (x + w, y + h), (0, 255, 0), 4)
         faceDetectedImg = cv2.cvtColor(imageBGR , cv2.COLOR_BGR2RGB)
         self.showDetectedFaces(faceDetectedImg)
-        
-
+       
+       
 
     def showDetectedFaces(self, image):
         self.ui.graphicsLayout_AfterFaceDetection.clear()
@@ -33,3 +33,6 @@ class FaceDetector:
         # Display the new image
         img_item = pg.ImageItem(image)
         view_box.addItem(img_item)
+
+
+    
