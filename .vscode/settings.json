@@ -3,6 +3,7 @@
         "frontalface",
         "haarcascades",
         "imread",
+        "linestyle",
         "ndarray",
         "ndim",
         "pyqtgraph",
