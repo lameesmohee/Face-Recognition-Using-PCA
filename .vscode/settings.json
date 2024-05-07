@@ -4,6 +4,7 @@
         "ndarray",
         "ndim",
         "pyqtgraph",
+        "rana",
         "Thresholding"
     ]
 }
