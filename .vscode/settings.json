@@ -1,5 +1,7 @@
 {
     "cSpell.words": [
+        "frontalface",
+        "haarcascades",
         "imread",
         "ndarray",
         "ndim",
