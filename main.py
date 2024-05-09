@@ -6,6 +6,7 @@ import cv2
 import numpy as np
 from FaceDetection import FaceDetector
 from RocCurve import ROCPlotter
+from FaceRecognition import FaceRecognition
 
 
 class MainWindow(QTabWidget):
@@ -30,6 +31,10 @@ class MainWindow(QTabWidget):
             self.selected_image_path = file_name
             image_data = cv2.imread(file_name)
             self.display_image(self.graphicsLayout_BeforeFaceRecognition, image_data)
+            ## recognize person
+            QApplication.processEvents()
+            self.applyFaceRecognition = FaceRecognition(self,self.selected_image_path)
+            self.applyFaceRecognition.test_data()
            
 
     def face_detection_browse_image(self):
