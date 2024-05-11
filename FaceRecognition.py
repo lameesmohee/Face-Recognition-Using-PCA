@@ -3,12 +3,18 @@ import cv2
 import os 
 from scipy.linalg import eigh
 from numpy.linalg import norm
+from sklearn.metrics import roc_curve
+import matplotlib.pyplot as plt
+import pyqtgraph as pg
 
 class FaceRecognition:
     def __init__(self,tab_widget,file_path):
         self.ui = tab_widget
         self.test_data_path = file_path
         self.eigen_values, self.eigen_vectors,self.eigen_faces = None, None, None
+
+        self.true_labels = []
+        self.predicted_scores = []
 
 
 
@@ -141,4 +147,30 @@ class FaceRecognition:
         predicted_person_idx = np.argmin(scores_list)    
         predicted_person = self.persons_name[predicted_person_idx]
         self.ui.label_personName.setText(str(predicted_person))
+        
+        # Store true label and predicted score for ROC curve plotting
+        self.true_labels.append(predicted_person == os.path.basename(os.path.dirname(self.test_data_path)))
+        self.predicted_scores.append(min(scores_list))
+        # After testing, call the plot_ROC method
+        self.plot_ROC(self.true_labels, self.predicted_scores)
+        
         print(f"predicted_person:{predicted_person}")
+
+    def plot_ROC(self, true_labels, predicted_scores):
+        # Convert true labels to binary (1 for positive, 0 for negative)
+        true_labels_binary = [1 if label else 0 for label in true_labels]
+
+        # Calculate FPR and TPR
+        fpr, tpr, _ = roc_curve(true_labels_binary, predicted_scores)
+
+        # Plot ROC curve
+        self.ui.graphicsLayout_BeforeFaceRecognition_2.clear()
+        roc_plot = self.ui.graphicsLayout_BeforeFaceRecognition_2.addPlot(title="ROC Curve")
+        roc_plot.plot(fpr, tpr, pen=pg.mkPen('b', width=2))
+        roc_plot.plot([0, 1], [0, 1], pen=pg.mkPen('r', width=2), style=pg.QtCore.Qt.DotLine)
+        roc_plot.setLabel('left', "True Positive Rate")
+        roc_plot.setLabel('bottom', "False Positive Rate")
+        roc_plot.showGrid(True, True)
+
+
+
