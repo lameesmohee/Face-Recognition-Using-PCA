@@ -147,21 +147,62 @@ class FaceRecognition:
         predicted_person_idx = np.argmin(scores_list)    
         predicted_person = self.persons_name[predicted_person_idx]
         self.ui.label_personName.setText(str(predicted_person))
-        
-        # Store true label and predicted score for ROC curve plotting
-        self.true_labels.append(predicted_person == os.path.basename(os.path.dirname(self.test_data_path)))
-        self.predicted_scores.append(min(scores_list))
-        # After testing, call the plot_ROC method
-        self.plot_ROC(self.true_labels, self.predicted_scores)
-        
         print(f"predicted_person:{predicted_person}")
+        
+        ## plotting ROC curve
+        self.plot_ROC()
+        
+      
 
-    def plot_ROC(self, true_labels, predicted_scores):
-        # Convert true labels to binary (1 for positive, 0 for negative)
-        true_labels_binary = [1 if label else 0 for label in true_labels]
 
+    def get_performance(self):
+        self.true_labels = []
+        self.predicted_labels = []
+        file_components = self.test_data_path.split('/')
+        print(file_components)
+        base_name = file_components[-2]
+        # print(f"base_name:{base_name}")
+        test_path_for_all_test_images =  r"Images\Test_images_faces"
+        list_directories = os.listdir(test_path_for_all_test_images)
+        for img_path in list_directories:
+            directory = os.path.join(test_path_for_all_test_images,img_path)       
+            for images_data_pth in os.listdir(directory):
+                scores_list = []
+                img_directory = os.path.join(directory,images_data_pth)   
+                test_data = cv2.imread(img_directory ,0)
+                test_data = cv2.resize(test_data,(50,50))
+                test_data = np.array(test_data)
+                test_data = np.reshape(test_data,[1,test_data.shape[0]*test_data.shape[1]])[0]
+                tested_image_projected = self.ReconstructImage(test_data)
+                 
+                for image in self.X_train:
+                    trained_image_projected = self.ReconstructImage(image)
+                    score = self.eculidean_distance(tested_image_projected,trained_image_projected)
+                    scores_list.append(score)
+
+                predicted_person_idx = np.argmin(scores_list)    
+                predicted_person = self.persons_name[predicted_person_idx]
+
+                if base_name == img_path:
+                    self.true_labels.append(1)
+                else:
+                    self.true_labels.append(0) 
+
+                if predicted_person == base_name:
+                    self.predicted_labels.append(1)
+                else:
+                    self.predicted_labels.append(0)
+
+
+
+
+    def plot_ROC(self):
+        self.get_performance()
+        # print(self.true_labels)
+        # print(self.predicted_labels)
+    
         # Calculate FPR and TPR
-        fpr, tpr, _ = roc_curve(true_labels_binary, predicted_scores)
+        fpr, tpr, _ = roc_curve(self.true_labels, self.predicted_labels)
 
         # Plot ROC curve
         self.ui.graphicsLayout_BeforeFaceRecognition_2.clear()
