@@ -56,7 +56,7 @@ class FaceRecognition:
 
     
     def get_the_best_numberOfEigenvectors(self,sorted_eigen_values_indices):
-        ##  stop at pov > 0.9
+        ##  stop at pov > 0.98
         max_pov = 0.98
         K = 0
         sum_eigen_values = 0
