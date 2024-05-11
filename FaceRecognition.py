@@ -152,12 +152,24 @@ class FaceRecognition:
         ## plotting ROC curve
         self.plot_ROC()
         
+
+    def softmax_fun(self,scores_list):
+        scores_list = np.array(scores_list)
+        
+        min_value = np.min(scores_list)
       
+
+        return 1/(1+np.exp(-min_value))
+         
 
 
     def get_performance(self):
         self.true_labels = []
         self.predicted_labels = []
+        self.predicted_labels_prob = []
+        scores_list_class_1 =[ ]
+        scores_list_class_0 =[ ]
+
         file_components = self.test_data_path.split('/')
         print(file_components)
         base_name = file_components[-2]
@@ -175,13 +187,16 @@ class FaceRecognition:
                 test_data = np.reshape(test_data,[1,test_data.shape[0]*test_data.shape[1]])[0]
                 tested_image_projected = self.ReconstructImage(test_data)
                  
-                for image in self.X_train:
+                for i,image in enumerate(self.X_train):
                     trained_image_projected = self.ReconstructImage(image)
                     score = self.eculidean_distance(tested_image_projected,trained_image_projected)
                     scores_list.append(score)
+                    
 
+               
                 predicted_person_idx = np.argmin(scores_list)    
                 predicted_person = self.persons_name[predicted_person_idx]
+           
 
                 if base_name == img_path:
                     self.true_labels.append(1)
@@ -204,10 +219,50 @@ class FaceRecognition:
         # Calculate FPR and TPR
         fpr, tpr, _ = roc_curve(self.true_labels, self.predicted_labels)
 
+
+        #  # Sort predicted labels in descending order
+        # predicted_labels = np.array(self.predicted_labels)
+        # true_labels = np.array(self.true_labels)
+        
+        # sorted_indices = np.argsort(predicted_labels)[::-1]
+        # sorted_labels = true_labels[sorted_indices]
+
+        # # Count positive and negative instances
+        # num_positives = np.sum(sorted_labels)
+        # num_negatives = len(sorted_labels) - num_positives
+
+        # # Initialize lists to store TPR and FPR
+        # tpr_list = []
+        # fpr_list = []
+
+        # # Initialize variables for previous label and counts
+        # prev_label = -1
+        # tp_count = 0
+        # fp_count = 0
+
+        # # Calculate TPR and FPR for each threshold
+        # for label in sorted_labels:
+        #     if label != prev_label:
+        #         tpr = tp_count / num_positives
+        #         fpr = fp_count / num_negatives
+        #         tpr_list.append(tpr)
+        #         fpr_list.append(fpr)
+        #         prev_label = label
+
+        #     if label == 1:
+        #         tp_count += 1
+        #     else:
+        #         fp_count += 1
+
+        # # Add final TPR and FPR for the last threshold
+        # tpr_list.append(tp_count / num_positives)
+        # fpr_list.append(fp_count / num_negatives)
+
+
         # Plot ROC curve
         self.ui.graphicsLayout_BeforeFaceRecognition_2.clear()
         roc_plot = self.ui.graphicsLayout_BeforeFaceRecognition_2.addPlot(title="ROC Curve")
-        roc_plot.plot(fpr, tpr, pen=pg.mkPen('b', width=2))
+        roc_plot.plot(fpr,  tpr, pen=pg.mkPen('b', width=2))
         roc_plot.plot([0, 1], [0, 1], pen=pg.mkPen('r', width=2), style=pg.QtCore.Qt.DotLine)
         roc_plot.setLabel('left', "True Positive Rate")
         roc_plot.setLabel('bottom', "False Positive Rate")
