@@ -163,6 +163,7 @@ class FaceRecognition:
         # Calculate FPR and TPR
         fpr, tpr, _ = roc_curve(true_labels_binary, predicted_scores)
 
+
         # Plot ROC curve
         self.ui.graphicsLayout_BeforeFaceRecognition_2.clear()
         roc_plot = self.ui.graphicsLayout_BeforeFaceRecognition_2.addPlot(title="ROC Curve")
