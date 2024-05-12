@@ -217,48 +217,44 @@ class FaceRecognition:
         # print(self.predicted_labels)
     
         # Calculate FPR and TPR
-        fpr, tpr, _ = roc_curve(self.true_labels, self.predicted_labels)
+        # fpr, tpr, _ = roc_curve(self.true_labels, self.predicted_labels)
 
+        predicted_labels = np.array(self.predicted_labels)
+        true_labels = np.array(self.true_labels)
+        sorted_indices = np.argsort(predicted_labels)
+        sorted_labels = true_labels[sorted_indices]
+        sorted_scores = predicted_labels[sorted_indices]
 
-        #  # Sort predicted labels in descending order
-        # predicted_labels = np.array(self.predicted_labels)
-        # true_labels = np.array(self.true_labels)
+        # Initialize arrays for true positive rate (TPR) and false positive rate (FPR)
+        tpr = [0]
+        fpr = [0]
         
-        # sorted_indices = np.argsort(predicted_labels)[::-1]
-        # sorted_labels = true_labels[sorted_indices]
+        num_positive = np.sum(true_labels == 1)
+        num_negative = np.sum(true_labels == 0)
 
-        # # Count positive and negative instances
-        # num_positives = np.sum(sorted_labels)
-        # num_negatives = len(sorted_labels) - num_positives
+        # Loop through each unique score
+        thresholds, threshold_indices = np.unique(sorted_scores, return_index=True)
+        threshold_indices = np.append(threshold_indices, len(sorted_scores))
 
-        # # Initialize lists to store TPR and FPR
-        # tpr_list = []
-        # fpr_list = []
+        for i in range(len(threshold_indices) - 1):
+            start_index = threshold_indices[i]
+            end_index = threshold_indices[i + 1]
 
-        # # Initialize variables for previous label and counts
-        # prev_label = -1
-        # tp_count = 0
-        # fp_count = 0
+            # Predict labels based on the current threshold
+            predicted_labels = sorted_scores >= thresholds[i]
 
-        # # Calculate TPR and FPR for each threshold
-        # for label in sorted_labels:
-        #     if label != prev_label:
-        #         tpr = tp_count / num_positives
-        #         fpr = fp_count / num_negatives
-        #         tpr_list.append(tpr)
-        #         fpr_list.append(fpr)
-        #         prev_label = label
+            # Calculate true positive rate and false positive rate
+            tp = np.sum(np.logical_and(predicted_labels, sorted_labels == 1))
+            fp = np.sum(np.logical_and(predicted_labels, sorted_labels == 0))
+            tpr.append(tp / num_positive)
+            fpr.append(fp / num_negative)
 
-        #     if label == 1:
-        #         tp_count += 1
-        #     else:
-        #         fp_count += 1
-
-        # # Add final TPR and FPR for the last threshold
-        # tpr_list.append(tp_count / num_positives)
-        # fpr_list.append(fp_count / num_negatives)
-
-
+        print("tpr",tpr )
+        print("fpr",fpr )
+        tpr = sorted(tpr)
+        fpr = sorted(fpr)
+        print("tpr",tpr )
+        print("fpr",fpr )
 
         # Plot ROC curve
         self.ui.graphicsLayout_BeforeFaceRecognition_2.clear()
@@ -268,6 +264,3 @@ class FaceRecognition:
         roc_plot.setLabel('left', "True Positive Rate")
         roc_plot.setLabel('bottom', "False Positive Rate")
         roc_plot.showGrid(True, True)
-
-
-
