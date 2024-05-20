@@ -1,15 +1,19 @@
 {
     "cSpell.words": [
         "eculidean",
+        "eigh",
         "frontalface",
         "haarcascade",
         "haarcascades",
         "imread",
+        "linalg",
         "linestyle",
         "ndarray",
         "ndim",
         "pyqtgraph",
         "rana",
+        "similerity",
+        "softmax",
         "Thresholding",
         "xlabel",
         "ylabel"
