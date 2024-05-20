@@ -19,7 +19,7 @@ class FaceRecognition:
 
 
     def train_data(self):
-        folder_path = r"Images\Train image faces"
+        folder_path = r"Images/Train image faces"
         self.persons_name = []
         self.X_train = [] 
         for folder in os.listdir(folder_path):
@@ -127,6 +127,8 @@ class FaceRecognition:
     
     def test_data(self):
         self.run_model()
+        threshold_1 = 1980
+        threshold_2 = 1990
         ##  matching image
         test_data = cv2.imread(self.test_data_path ,0)
         test_data = cv2.resize(test_data,(50,50))
@@ -144,8 +146,13 @@ class FaceRecognition:
             score = self.eculidean_distance(tested_image_projected,trained_image_projected)
             scores_list.append(score)
 
-        predicted_person_idx = np.argmin(scores_list)    
-        predicted_person = self.persons_name[predicted_person_idx]
+        predicted_person_idx = np.argmin(scores_list) 
+        
+        print(f"distance:{scores_list[predicted_person_idx]}")   
+        if threshold_1 < scores_list[predicted_person_idx] and scores_list[predicted_person_idx] < threshold_2:
+            predicted_person = "Unknown person"
+        else:    
+            predicted_person = self.persons_name[predicted_person_idx]
         self.ui.label_personName.setText(str(predicted_person))
         print(f"predicted_person:{predicted_person}")
         
@@ -174,7 +181,7 @@ class FaceRecognition:
         print(file_components)
         base_name = file_components[-2]
         # print(f"base_name:{base_name}")
-        test_path_for_all_test_images =  r"Images\Test_images_faces"
+        test_path_for_all_test_images =  r"Images/Test_images_faces"
         list_directories = os.listdir(test_path_for_all_test_images)
         for img_path in list_directories:
             directory = os.path.join(test_path_for_all_test_images,img_path)       
@@ -229,7 +236,7 @@ class FaceRecognition:
         tpr = [0]
         fpr = [0]
         
-        num_positive = np.sum(true_labels == 1)
+        num_positive = np.sum(true_labels == 1) #fn + tp
         num_negative = np.sum(true_labels == 0)
 
         # Loop through each unique score
@@ -237,8 +244,7 @@ class FaceRecognition:
         threshold_indices = np.append(threshold_indices, len(sorted_scores))
 
         for i in range(len(threshold_indices) - 1):
-            start_index = threshold_indices[i]
-            end_index = threshold_indices[i + 1]
+            
 
             # Predict labels based on the current threshold
             predicted_labels = sorted_scores >= thresholds[i]

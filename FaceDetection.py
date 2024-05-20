@@ -14,7 +14,7 @@ class FaceDetector:
             imageGray = cv2.cvtColor(imageBGR, cv2.COLOR_BGR2GRAY)
         
         faceDetector = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
-        face = faceDetector.detectMultiScale(imageGray, scaleFactor=1.1, minNeighbors=5, minSize=(40, 40))
+        face = faceDetector.detectMultiScale(imageGray, scaleFactor=1.1, minNeighbors=20, minSize=(30, 30))
         numFaces = len(face)
         self.ui.numberOfFaces_label.setText(str(numFaces))
         for (x, y, w, h) in face:

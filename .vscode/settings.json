@@ -1,6 +1,8 @@
 {
     "cSpell.words": [
+        "eculidean",
         "frontalface",
+        "haarcascade",
         "haarcascades",
         "imread",
         "linestyle",
@@ -8,6 +10,8 @@
         "ndim",
         "pyqtgraph",
         "rana",
-        "Thresholding"
+        "Thresholding",
+        "xlabel",
+        "ylabel"
     ]
 }
